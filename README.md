@@ -1,6 +1,6 @@
 
 
-### 'yarn start'
+### `yarn start`
 
 Should run my application, if not npm start should work as well
 
