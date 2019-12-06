@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Login from "./components/login";
 import Register from "./components/register";
 import Home from "./components/home";
+import NavBar from "./components/navbar";
 
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
@@ -19,6 +20,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
+        <NavBar />
         <div className="auth-box">
           <Switch>
             <Route path="/login">

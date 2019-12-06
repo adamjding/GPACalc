@@ -19,7 +19,9 @@ class Home extends Component {
       password: "",
       password2: "",
       loading: false,
-      error: ""
+      error: "",
+      totalCredits: 0,
+      earnedCredits: 0
     };
   }
   componentDidMount() {
@@ -48,7 +50,9 @@ class Home extends Component {
       let userData = {
         name: this.state.name,
         email: this.state.email,
-        password: this.state.password
+        password: this.state.password,
+        totalCredits: this.state.totalCredits,
+        earnedCredits: this.state.earnedCredits
       };
 
       try {

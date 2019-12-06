@@ -55,8 +55,7 @@ router.post("/login", (req, res) => {
         // Create JWT Payload
         const payload = {
           id: user.id,
-          name: user.name,
-          email: user.email
+          name: user.name
         };
 
         // Sign token
@@ -67,6 +66,7 @@ router.post("/login", (req, res) => {
             expiresIn: 31556926 // 1 year in seconds
           },
           (err, token) => {
+            console.log("User Token: " + token);
             res.json({
               success: true,
               token: token
@@ -80,22 +80,37 @@ router.post("/login", (req, res) => {
   });
 });
 
-router.get("/protected", (req, res, next) => {
-  passport.authenticate("jwt", { session: false }, (err, user, info) => {
-    if (err) {
-      res.status(400).json({ msg: "There was an error" });
-      console.log(err);
-    }
-
-    if (!user) {
-      res.status(404).json({ msg: "Invalid token." });
-    }
-
-    //User found, send a custom message
-    res.send({
-      msg: `Hi ${user.name}, welcome to the app!`
-    });
-  })(req, res, next);
+router.get("/grades", passport.authenticate('jwt', {session: false}), async (req, res) => {
+  res.send({
+    earnedCredits: req.user.earnedCredits,
+    totalCredits: req.user.totalCredits
+  });
 });
+
+router.post('/addCourse', passport.authenticate('jwt', {session: false}), async (req, res) => {
+  const user = req.user;
+  if(!user) {
+    res.status(404);
+    return;
+  }
+  var dict = new Object();
+  dict["A"] = 4;
+  dict["B"] = 3;
+  dict["C"] = 2;
+  dict["D"] = 1;
+  dict["F"] = 0;
+  user.courses.push({name: req.body.courseName, grade: req.body.grade, creditHours: req.body.creditHours})
+  user.totalCredits = user.totalCredits + (req.body.creditHours * 1)
+  user.earnedCredits = user.earnedCredits + (dict[req.body.grade] * req.body.creditHours)
+  console.log(user.earnedCredits)
+  console.log(user.totalCredits)
+  console.log(user.courses)
+  const updated = await user.save();
+  res.send({
+    earnedCredits: updated.earnedCredits,
+    totalCredits: updated.totalCredits
+  });
+});
+
 
 module.exports = router;
